@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#da1139</color>
+    <color name="colorPrimaryDark">#a40114</color>
+    <color name="colorAccent">#323333</color>
+
+    <color name="btnSignUp">#feffffff</color>
+    <color name="btnSignActive">#111211</color>
+
+    <color name="overlayBackground">#7f333639</color>
+    <color name="overlayBackgroundBar">#0e0d0e</color>
+
+    <color name="yeallo_Start">#fbb901</color>
+    <color name="yeallo_End">#fd7f01</color>
+
+    <color name="background_color">#1e2024</color>
+    <color name="text_color_dark">#1e1a1a</color>
+    <color name="text_color_bright">#fcfbfa</color>
+    <color name="text_color_off_white">#797a7b</color>
+    <color name="text_color_yeallo">#fd7f01</color>
+    <color name="dialog_back_color">#404144</color>
+</resources>
