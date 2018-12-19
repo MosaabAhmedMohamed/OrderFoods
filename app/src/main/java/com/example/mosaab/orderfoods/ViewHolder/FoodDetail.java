@@ -1,16 +1,19 @@
 package com.example.mosaab.orderfoods.ViewHolder;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.andremion.counterfab.CounterFab;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.example.mosaab.orderfoods.Common.Common;
 import com.example.mosaab.orderfoods.Database.Database;
@@ -18,6 +21,8 @@ import com.example.mosaab.orderfoods.Model.Foods;
 import com.example.mosaab.orderfoods.Model.Order;
 import com.example.mosaab.orderfoods.Model.Rating;
 import com.example.mosaab.orderfoods.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,19 +31,22 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.stepstone.apprating.AppRatingDialog;
-import com.stepstone.apprating.AppRatingDialogView;
 import com.stepstone.apprating.listener.RatingDialogListener;
-
 import java.util.Arrays;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FoodDetail extends AppCompatActivity implements RatingDialogListener {
 
     private TextView food_name,fod_price,food_description;
     private ImageView food_detail_image;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private FloatingActionButton btnCart,btn_Rating;
+    private FloatingActionButton btn_Rating;
+    private CounterFab  btnCart;
     private ElegantNumberButton elegantNumberButton;
     private RatingBar ratingBar;
+    private Button show_comment_btn;
 
     private Foods CurrantFoods;
 
@@ -51,6 +59,7 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Apply_New_Font();
         setContentView(R.layout.activity_food_detail);
 
         InitUI();
@@ -73,20 +82,47 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+              boolean isExist = new Database(getBaseContext()).Check_if_Food_exist_inCART(food_id, Common.currntUser.getPhone());
                 //get from local database
-                add_cart_to_DB();
+               if(!isExist)
+               {add_cart_to_DB();}
+               else
+               {
+                   new Database(getBaseContext()).increase_Cart(Common.currntUser.getPhone(),food_id);
+               }
             }
         });
+        btnCart.setCount(new Database(this).getCountCart(Common.currntUser.getPhone()));
 
+        show_comment_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent show_Comment_intent = new Intent(FoodDetail.this,Show_Comments.class);
+                show_Comment_intent.putExtra(Common.FOOD_ID,food_id);
+                startActivity(show_Comment_intent);
+            }
+        });
+    }
+
+    private void Apply_New_Font() {
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/restaurant_font.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void InitUI()
     {
         elegantNumberButton=findViewById(R.id.number_button);
-        btnCart=findViewById(R.id.btnCart);
+        btnCart = findViewById(R.id.btnCart);
         btn_Rating = findViewById(R.id.btn_Rating);
-        ratingBar = findViewById(R.id.Rating_Bar);
+        ratingBar = findViewById(R.id.Rating_Bar_food_detail);
+        show_comment_btn = findViewById(R.id.show_comment_Bu);
 
         //init firebase
         database = FirebaseDatabase.getInstance();
@@ -107,11 +143,14 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     //add food detail to local Database
     private void add_cart_to_DB()
     {
-        new Database(getApplicationContext()).addToCart(new Order(food_id,
+        new Database(getApplicationContext()).addToCart(new Order(
+                Common.currntUser.getPhone(),
+                food_id,
                 CurrantFoods.getName(),
                 elegantNumberButton.getNumber(),
                 CurrantFoods.getPrice(),
-                CurrantFoods.getDiscount()
+                CurrantFoods.getDiscount(),
+                CurrantFoods.getImage()
         ));
 
         Toast.makeText(FoodDetail.this, "Added to cart", Toast.LENGTH_SHORT).show();
@@ -190,7 +229,7 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 CurrantFoods =dataSnapshot.getValue(Foods.class);
 
-                Picasso.with(getApplicationContext()).load(CurrantFoods.getImage()).into(food_detail_image);
+                Picasso.get().load(CurrantFoods.getImage()).into(food_detail_image);
 
                 collapsingToolbarLayout.setTitle(CurrantFoods.getName());
 
@@ -227,6 +266,19 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 food_id,
                 String.valueOf(value),
                 Comments);
+
+        rating_Table.push()
+                .setValue(rating)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        Toast.makeText(FoodDetail.this, "Thank you for rating us", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+        /*
         rating_Table.child(Common.currntUser.getPhone()).addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -255,6 +307,14 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
 
             }
         });
+        */
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        btnCart.setCount(new Database(this).getCountCart(Common.currntUser.getPhone()));
 
     }
 }

@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
-
 import com.example.mosaab.orderfoods.Interface.ItemClickListner;
 import com.example.mosaab.orderfoods.R;
 

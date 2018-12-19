@@ -9,6 +9,9 @@ public class Request {
     private String name;
     private String status;
     private String comment;
+    private String Payment_Method;
+    private String Payment_State;
+    private String LatLng = "";
     private List<Order> foods;
 
     public Request()
@@ -16,16 +19,43 @@ public class Request {
 
     }
 
-    public Request(String phone, String adress, String toatl, String name, String status, String comment, List<Order> foods) {
+    public Request(String phone, String adress, String toatl, String name, String status, String comment, String payment_Method, String payment_State, String latLng, List<Order> foods) {
         this.phone = phone;
         this.adress = adress;
         this.toatl = toatl;
         this.name = name;
         this.status = status;
         this.comment = comment;
+        Payment_Method = payment_Method;
+        Payment_State = payment_State;
+        LatLng = latLng;
         this.foods = foods;
     }
 
+
+    public String getPayment_State() {
+        return Payment_State;
+    }
+
+    public void setPayment_State(String payment_State) {
+        Payment_State = payment_State;
+    }
+
+    public String getPayment_Method() {
+        return Payment_Method;
+    }
+
+    public void setPayment_Method(String payment_Method) {
+        Payment_Method = payment_Method;
+    }
+
+    public String getLatLng() {
+        return LatLng;
+    }
+
+    public void setLatLng(String latLng) {
+        LatLng = latLng;
+    }
 
     public String getPhone() {
         return phone;

@@ -2,12 +2,12 @@
 <resources>
     <color name="colorPrimary">#da1139</color>
     <color name="colorPrimaryDark">#a40114</color>
-    <color name="colorAccent">#323333</color>
+    <color name="colorAccent">#fd7f01</color>
 
     <color name="btnSignUp">#feffffff</color>
     <color name="btnSignActive">#111211</color>
 
-    <color name="overlayBackground">#7f333639</color>
+    <color name="overlayBackground">#404144</color>
     <color name="overlayBackgroundBar">#0e0d0e</color>
 
     <color name="yeallo_Start">#fbb901</color>

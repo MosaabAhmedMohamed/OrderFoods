@@ -2,11 +2,13 @@ package com.example.mosaab.orderfoods.Model;
 
 public class Order {
 
+    private String User_Phone;
     private String ProudctId;
     private String ProductName;
     private String Quantity;
     private String Price;
     private String Discount;
+    private String Image;
 
 
     public Order()
@@ -14,12 +16,22 @@ public class Order {
 
     }
 
-    public Order(String proudctId, String productName, String quantity, String price, String discount) {
+    public Order(String user_Phone, String proudctId, String productName, String quantity, String price, String discount, String image) {
+        User_Phone = user_Phone;
         ProudctId = proudctId;
         ProductName = productName;
         Quantity = quantity;
         Price = price;
         Discount = discount;
+        Image = image;
+    }
+
+    public String getUser_Phone() {
+        return User_Phone;
+    }
+
+    public void setUser_Phone(String user_Phone) {
+        User_Phone = user_Phone;
     }
 
     public String getProudctId() {
@@ -61,4 +73,13 @@ public class Order {
     public void setDiscount(String discount) {
         Discount = discount;
     }
+
+    public String getImage() {
+        return Image;
+    }
+
+    public void setImage(String image) {
+        Image = image;
+    }
+
 }

@@ -29,19 +29,35 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.github.jd-alexander:android-flat-button:v1.1'
-    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.firebaseui:firebase-ui-database:1.2.0'
-    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+
+     // to load images
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //firebase and firebase UI
+    implementation 'com.firebaseui:firebase-ui-database:4.2.1'
+    implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+
+    //google services
+    implementation 'com.google.android.gms:play-services-places:16.0.0'
+    //google maps services needed for directions
+    implementation 'com.google.maps:google-maps-services:0.2.11'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+
+    //elegant number for number counting
+    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
+
+    //serach bar
     implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
 
     //to save user login state  shared pref lib
     implementation 'io.paperdb:paperdb:2.6'
-    // material design lib for animated material tablayout &button &etc
+
+    // material design lib for animated material tablayout &button &etc Check box
     implementation 'com.github.rey5137:material:1.2.5'
 
     //rating bar lib
@@ -56,4 +72,15 @@ dependencies {
 
     // loading dialog
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+    //Font
+    implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
+
+    //counter for FAB
+    implementation 'com.github.andremion:counterfab:1.0.1'
+
+    //ViewPagerIndicator
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.1.2'
 }
+apply plugin: 'com.google.gms.google-services'
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true

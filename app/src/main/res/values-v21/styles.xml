@@ -34,7 +34,6 @@
     <style name="RatingDialogButtonStyle" parent="@style/Widget.AppCompat.ButtonBar.AlertDialog">
         <item name="android:textColor">@color/colorAccent</item>
         <item name="android:textSize">
-            @dimen/bottom_text_size
         </item>
     </style>
 

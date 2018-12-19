@@ -16,10 +16,27 @@
             android:orientation="vertical"
             android:layout_weight="2"
             android:paddingStart="8dp"
-            android:background="@color/text_color_off_white"
+            android:background="@color/background_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <AutoCompleteTextView
+                android:textColorHint="@color/text_color_yeallo"
+                android:textColor="@color/text_color_dark"
+                android:background="@drawable/edt_btn_shape"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:paddingStart="8dp"
+                android:id="@+id/address_edt"
+                android:hint="Address"
+                android:text=""
+                android:textSize="24sp"
+                android:inputType="text"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/comment_layout"
@@ -28,6 +45,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
                 android:textColorHint="@color/text_color_yeallo">
 
                 <EditText
@@ -36,43 +54,98 @@
                     android:hint="Comment"
                     android:textColorHint="@color/text_color_yeallo"
                     android:text=""
+                    android:paddingStart="8dp"
+                    android:padding="2dp"
                     android:textColor="@color/text_color_dark"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:inputType="textMultiLine"
                     android:background="@drawable/edt_btn_shape"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     />
-
             </android.support.design.widget.TextInputLayout>
 
-
-
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/address_layout"
+            <TextView
+                android:padding="2dp"
+                android:layout_marginStart="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="32dp"
-                android:textColorHint="@color/text_color_yeallo">
+                android:text="Delevery Method :"
+                android:textColor="@color/text_color_bright"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                />
 
-                <EditText
-                    android:textColorHint="@color/text_color_yeallo"
-                    android:textColor="@color/text_color_dark"
+          <RadioGroup
+              android:layout_marginTop="8dp"
+              android:layout_marginStart="32dp"
+              android:layout_marginEnd="32dp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+              <RadioButton
+                  android:id="@+id/my_location_btn"
+                  android:background="@drawable/edt_btn_shape"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="ship to my location"
+                  android:textSize="18sp"
+                  android:paddingEnd="24dp"
+                  android:drawableRight="@drawable/ic_my_location_black_24dp"
+                  android:textColor="@color/text_color_yeallo"/>
+              <RadioButton
+                  android:id="@+id/my_home_btn"
+                  android:layout_marginTop="8dp"
+                  android:layout_marginBottom="8dp"
+                  android:paddingEnd="24dp"
+                  android:background="@drawable/edt_btn_shape"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="ship to my home"
+                  android:textSize="18sp"
+                  android:drawableRight="@drawable/ic_home_black_24dp"
+                  android:textColor="@color/text_color_yeallo"/>
+          </RadioGroup>
+
+            <TextView
+                android:padding="2dp"
+                android:layout_marginStart="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Payment Method :"
+                android:textColor="@color/text_color_bright"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                />
+
+            <RadioGroup
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radio_COD_btn"
                     android:background="@drawable/edt_btn_shape"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/address_edt"
-                    android:hint="Address"
-                    android:text=""
-                    android:textSize="24sp"
-                    android:inputType="text"
-                    />
-
-            </android.support.design.widget.TextInputLayout>
-
+                    android:text="Cash on delivery"
+                    android:textSize="18sp"
+                    android:paddingEnd="24dp"
+                    android:drawableRight="@drawable/ic_my_location_black_24dp"
+                    android:textColor="@color/text_color_yeallo"/>
+                <RadioButton
+                    android:id="@+id/radio_DEBT_btn"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingEnd="24dp"
+                    android:background="@drawable/edt_btn_shape"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dept"
+                    android:textSize="18sp"
+                    android:drawableRight="@drawable/ic_home_black_24dp"
+                    android:textColor="@color/text_color_yeallo"/>
+            </RadioGroup>
 
         </LinearLayout>
 

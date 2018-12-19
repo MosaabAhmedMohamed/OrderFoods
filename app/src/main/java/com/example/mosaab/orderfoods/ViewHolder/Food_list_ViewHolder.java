@@ -11,8 +11,8 @@ import com.example.mosaab.orderfoods.Interface.ItemClickListner;
 
 public class Food_list_ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView food_name;
-    public ImageView food_iamge,fav_image;
+    public TextView food_name,price_TV;
+    public ImageView food_iamge,fav_image,add_ToCart;
 
     private ItemClickListner itemClickListner;
 
@@ -23,9 +23,11 @@ public class Food_list_ViewHolder extends RecyclerView.ViewHolder implements Vie
     public Food_list_ViewHolder(@NonNull View itemView) {
         super(itemView);
 
-        food_name=itemView.findViewById(R.id.food_name);
-        food_iamge=itemView.findViewById(R.id.food_iamge);
-        fav_image=itemView.findViewById(R.id.fav);
+        food_name =itemView.findViewById(R.id.food_name);
+        food_iamge =itemView.findViewById(R.id.food_iamge);
+        fav_image =itemView.findViewById(R.id.fav);
+        price_TV =itemView.findViewById(R.id.price_foodList_TV);
+        add_ToCart = itemView.findViewById(R.id.addToCart_FoodItem);
 
         itemView.setOnClickListener(this);
     }

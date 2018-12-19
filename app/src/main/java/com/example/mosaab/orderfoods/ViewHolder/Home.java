@@ -1,16 +1,15 @@
 package com.example.mosaab.orderfoods.ViewHolder;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,48 +20,75 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.andremion.counterfab.CounterFab;
 import com.example.mosaab.orderfoods.Common.Common;
+import com.example.mosaab.orderfoods.Database.Database;
 import com.example.mosaab.orderfoods.Interface.ItemClickListner;
+import com.example.mosaab.orderfoods.Interface.OnItemClickListnrer;
+import com.example.mosaab.orderfoods.Model.Banner;
 import com.example.mosaab.orderfoods.Model.Category;
 import com.example.mosaab.orderfoods.Model.Token;
 import com.example.mosaab.orderfoods.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import io.paperdb.Paper;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Home extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        OnItemClickListnrer
+{
+
+    private static final String TAG = "Home";
+
 
     private TextView textFullName;
     private RecyclerView recycler_menu;
-    private RecyclerView.LayoutManager layoutManager;
     private Toolbar toolbar;
-    private FloatingActionButton fab;
+    private CounterFab fab;
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private View Nav_headrView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ViewPager viewPager;
 
     private FirebaseDatabase database;
     private DatabaseReference Category_table;
 
 
-    FirebaseRecyclerAdapter<Category,MenuViewHolder> adapter;
+    private FirebaseRecyclerAdapter<Category,MenuViewHolder> adapter;
+    private ViewPagerAdapter viewPagerAdapter;
+    private DotsIndicator dotsIndicator;
+
+    private ArrayList<Banner> banner_Url_list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Apply_New_Font();
         setContentView(R.layout.activity_home);
 
         InitUI();
@@ -77,6 +103,17 @@ public class Home extends AppCompatActivity
 
     }
 
+    private void Apply_New_Font() {
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/restaurant_font.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     private void InitUI() {
 
@@ -90,8 +127,19 @@ public class Home extends AppCompatActivity
         database=FirebaseDatabase.getInstance();
         Category_table =database.getReference("Category");
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        //image slider
+         viewPager = findViewById(R.id.banner_viewPager);
+         dotsIndicator = (DotsIndicator) findViewById(R.id.dots_indicator);
 
+
+        inflate_Recycler_View();
+
+
+        fab = (CounterFab) findViewById(R.id.fab);
+
+        if (Common.currntUser.getPhone() !=null) {
+            fab.setCount(new Database(this).getCountCart(Common.currntUser.getPhone()));
+        }
         swipeRefreshLayout = findViewById(R.id.content_home_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
@@ -115,9 +163,12 @@ public class Home extends AppCompatActivity
 
         //Init Recycler View
         recycler_menu = findViewById(R.id.recycler_menu);
-        recycler_menu.setHasFixedSize(true);
-        layoutManager=new LinearLayoutManager(this);
-        recycler_menu.setLayoutManager(layoutManager);
+        //layoutManager=new LinearLayoutManager(this);
+        //recycler_menu.setLayoutManager(layoutManager);
+        recycler_menu.setLayoutManager(new GridLayoutManager(this,2));
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(recycler_menu.getContext(),R.anim.layout_fall_down);
+        recycler_menu.setLayoutAnimation(controller);
+
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -144,12 +195,55 @@ public class Home extends AppCompatActivity
         });
 
 
+
+
+    }
+
+    private void inflate_Recycler_View() {
+
+        FirebaseRecyclerOptions options =new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(Category_table,Category.class)
+                .build();
+
+        adapter =new FirebaseRecyclerAdapter<Category,MenuViewHolder>(options)
+        {
+            @NonNull
+            @Override
+            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                View item_View = LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.menu_item,viewGroup,false);
+                return new MenuViewHolder(item_View);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull MenuViewHolder viewHolder, final int position, @NonNull Category model)
+            {
+                viewHolder.txtMenuName.setText(model.getName());
+
+                Picasso.get().load(model.getLink())
+                        .into(viewHolder.imageView);
+
+                // clicked type of food in the menu
+                final Category clickedItem = model;
+
+                viewHolder.setItemClickListner(new ItemClickListner() {
+                    @Override
+                    public void onclick(View view, int postion, boolean isLongClick) {
+
+                        Intent food_list_intent = new Intent(Home.this,FoodList.class);
+                        food_list_intent.putExtra("CategoryId",adapter.getRef(position).getKey());
+                        startActivity(food_list_intent);
+                    }
+                });
+            }
+        };
     }
 
     private void check_intrnet()
     {
         if(Common.isConnectedToInternet(Home.this))
         {
+            Setup_Slider();
             LoadMenu();
         }
         else {
@@ -158,37 +252,80 @@ public class Home extends AppCompatActivity
         }
     }
 
-    private void LoadMenu() {
-        adapter =new FirebaseRecyclerAdapter<Category,MenuViewHolder>(
-                Category.class,
-                R.layout.menu_item,
-                MenuViewHolder.class,
-                Category_table)
-        {
+    private void Setup_Slider()
+    {
+        banner_Url_list = new ArrayList<>();
+
+        final DatabaseReference Banners = database.getReference("Banner");
+
+        Banners.addValueEventListener(new ValueEventListener() {
             @Override
-            protected void populateViewHolder(MenuViewHolder viewHolder, Category model, final int position)
-            {
-              viewHolder.txtMenuName.setText(model.getName());
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-              Picasso.with(getApplicationContext()).load(model.getLink())
-                      .into(viewHolder.imageView);
+                for (DataSnapshot postSnapShot : dataSnapshot.getChildren())
+                {
+                   Banner banner = postSnapShot.getValue(Banner.class);
 
-              // clicked type of food in the menu
-              final Category clickedItem = model;
-              viewHolder.setItemClickListner(new ItemClickListner() {
-                  @Override
-                  public void onclick(View view, int postion, boolean isLongClick) {
+                   banner_Url_list.add(new Banner(banner.getId(),banner.getName(),banner.getImage()));
+                 //  imageUrls.put(banner.getName()+"_"+banner.getId(),banner.getImage());
+                }
 
-                      Intent food_list_intent = new Intent(Home.this,FoodList.class);
-                      food_list_intent.putExtra("CategoryId",adapter.getRef(position).getKey());
-                      startActivity(food_list_intent);
-                                        }
-              });
+                Init_ViewPager();
+
             }
-        };
-        recycler_menu.setAdapter(adapter);
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Toast.makeText(Home.this, "Error " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+
+
+
+    }
+
+    private void Init_ViewPager() {
+
+        viewPagerAdapter= new ViewPagerAdapter(Home.this, banner_Url_list);
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPagerAdapter.setOnItemClickListner(Home.this);
+        if (banner_Url_list.size() != 0)
+        { dotsIndicator.setViewPager(viewPager); }
+
+    }
+
+
+    private void LoadMenu() {
+
+        adapter.startListening();
+        recycler_menu.setAdapter(adapter);
         swipeRefreshLayout.setRefreshing(false);
+
+        //animation
+        recycler_menu.getAdapter().notifyDataSetChanged();
+        recycler_menu.scheduleLayoutAnimation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fab.setCount(new Database(this).getCountCart(Common.currntUser.getPhone()) );
+
+        if(adapter != null)
+        {
+            adapter.startListening();
+        }
+
     }
 
     private void Update_Token(String token) {
@@ -220,10 +357,11 @@ public class Home extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-/*
-        if (item.getItemId() ==R.id.refresh)
-            LoadMenu();
-*/
+
+        if (item.getItemId() ==R.id.menu_search)
+
+           startActivity(new Intent(Home.this,Search_Activity.class));
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -235,7 +373,16 @@ public class Home extends AppCompatActivity
 
         if (id == R.id.nav_menu) {
             // Handle the camera action
-        } else if (id == R.id.nav_carts) {
+        }
+        else if(id == R.id.nav_favorite)
+        {
+            startActivity(new Intent(Home.this,FavortiesActivity.class));
+        }
+        else if(id == R.id.nav_home_address)
+        {
+            Show_Home_Address_Dialog();
+        }
+        else if (id == R.id.nav_carts) {
             Intent CartIntent =new Intent(Home.this,Cart.class);
             startActivity(CartIntent);
 
@@ -251,7 +398,8 @@ public class Home extends AppCompatActivity
         {
            Contact_Us();
         }
-        else if (id == R.id.nav_logout) {
+        else if (id == R.id.nav_logout)
+        {
            Paper.book().destroy();
 
             Intent SignIn = new Intent(Home.this,com.example.mosaab.orderfoods.ViewHolder.SignIn.class);
@@ -263,6 +411,49 @@ public class Home extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void Show_Home_Address_Dialog() {
+        AlertDialog.Builder alertDialog =new AlertDialog.Builder(this,R.style.MyDialogTheme);
+        alertDialog.setTitle("Change Password");
+        alertDialog.setMessage("Please fill all information");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_Address = inflater.inflate(R.layout.home_address,null);
+
+        final EditText Home_address_ET = layout_Address.findViewById(R.id.address_home_ET);
+
+
+        alertDialog.setView(layout_Address);
+
+        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Common.currntUser.setHomeAddress(Home_address_ET.getText().toString());
+
+                FirebaseDatabase.getInstance().getReference("User")
+                        .child(Common.currntUser.getPhone())
+                        .setValue(Common.currntUser)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(Home.this, "Update address successfully ", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+        });
+
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
     }
 
     private void Contact_Us()
@@ -280,7 +471,7 @@ public class Home extends AppCompatActivity
 
     private void Show_Change_Password_Dialog() {
 
-        AlertDialog.Builder alertDialog =new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialog =new AlertDialog.Builder(this,R.style.MyDialogTheme);
         alertDialog.setTitle("Change Password");
         alertDialog.setMessage("Please fill all information");
 
@@ -342,6 +533,14 @@ public class Home extends AppCompatActivity
         });
 
         alertDialog.show();
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Intent Detial_Intent = new Intent(Home.this,FoodDetail.class);
+        Detial_Intent.putExtra("FoodId",banner_Url_list.get(position).getId());
+        startActivity(Detial_Intent);
 
     }
 }
