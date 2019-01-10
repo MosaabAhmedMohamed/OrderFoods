@@ -22,11 +22,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -58,8 +54,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/include" />
         </LinearLayout>
 
-
-    </android.support.constraint.ConstraintLayout>
 
     <com.andremion.counterfab.CounterFab
         android:id="@+id/fab"

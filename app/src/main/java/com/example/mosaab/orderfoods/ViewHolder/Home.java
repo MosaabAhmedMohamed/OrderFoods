@@ -140,7 +140,7 @@ public class Home extends AppCompatActivity implements
         if (Common.currntUser.getPhone() !=null) {
             fab.setCount(new Database(this).getCountCart(Common.currntUser.getPhone()));
         }
-        swipeRefreshLayout = findViewById(R.id.content_home_layout);
+        swipeRefreshLayout = findViewById(R.id.home_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,

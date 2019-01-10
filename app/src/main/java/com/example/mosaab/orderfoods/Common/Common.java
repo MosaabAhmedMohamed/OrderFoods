@@ -1,18 +1,12 @@
 package com.example.mosaab.orderfoods.Common;
 
 import android.content.Context;
-import android.icu.util.Calendar;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
 import com.example.mosaab.orderfoods.Model.User;
 import com.example.mosaab.orderfoods.Remote.API_Service;
 import com.example.mosaab.orderfoods.Remote.Retrofit_client;
-
 import java.util.Locale;
-
-import retrofit2.Retrofit;
 
 public class Common {
     public static User currntUser;

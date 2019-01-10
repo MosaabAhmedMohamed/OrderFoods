@@ -7,9 +7,10 @@
     android:background="@drawable/splach_background_color"
     tools:context=".ViewHolder.splach_screen">
 
+
     <ImageView
-        android:src="@drawable/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/logo"/>
 
 </android.support.constraint.ConstraintLayout>

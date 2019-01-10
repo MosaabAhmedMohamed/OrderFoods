@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -225,6 +226,8 @@ public class Cart extends AppCompatActivity implements
         alertDialog.setMessage("Enter your address");
 
 
+        if(order_address_comment.getParent()!=null)
+            ((ViewGroup)order_address_comment.getParent()).removeView(order_address_comment); // <- fix
         alertDialog.setView(order_address_comment);
         alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
 
@@ -336,8 +339,7 @@ public class Cart extends AppCompatActivity implements
                             // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                             String address = addresses.get(0).getAddressLine(0);
 
-
-                            address_TV.setText(address);
+                                address_TV.setText(address);
                         }
                         else
                             {
@@ -354,6 +356,9 @@ public class Cart extends AppCompatActivity implements
 
     }
 
+
+
+
     private void set_myHome_Address() {
 
         my_home_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -361,6 +366,7 @@ public class Cart extends AppCompatActivity implements
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
                 {
+
                     address_TV.setText(Common.currntUser.getHomeAddress());
                 }
             }

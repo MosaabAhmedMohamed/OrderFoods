@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 import com.example.mosaab.orderfoods.Common.Common;
 import com.example.mosaab.orderfoods.Database.Database;
@@ -95,9 +97,11 @@ public class FoodList extends AppCompatActivity {
         localDB =new Database(this);
 
         recyclerView=findViewById(R.id.recycler_food);
-        recyclerView.setHasFixedSize(true);
         layoutManager=new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(recyclerView.getContext(),R.anim.layout_fall_down);
+        recyclerView.setLayoutAnimation(controller);
 
         materialSearchBar = findViewById(R.id.serchBar);
         suggestList = new ArrayList<>();
@@ -264,7 +268,7 @@ public class FoodList extends AppCompatActivity {
     private void loadSuggest() {
 
         // to filter suggestion
-        foodlist_table.orderByChild("MenuId").equalTo(categoryId).addValueEventListener(new ValueEventListener() {
+        foodlist_table.orderByChild("menuId").equalTo(categoryId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -290,7 +294,7 @@ public class FoodList extends AppCompatActivity {
     private void loadListFood(String categoryId) {
 
         //to filter search
-        Query Category = foodlist_table.orderByChild("MenuId").equalTo(categoryId);
+        Query Category = foodlist_table.orderByChild("menuId").equalTo(categoryId);
 
         FirebaseRecyclerOptions options =new FirebaseRecyclerOptions.Builder<Foods>()
                 .setQuery(Category,Foods.class)
